@@ -1,17 +1,17 @@
 # Iris
 
-A small Swift package for routing incoming URLs — custom-scheme deep links
-and Universal Links alike — into typed SwiftUI navigation, without
+A small Swift package for routing incoming URLs (custom-scheme deep links
+and Universal Links alike) into typed SwiftUI navigation, without
 hand-rolling navigation plumbing for each new screen.
 
 ## What it does
 
 - Turns an incoming URL into an app-defined `Intent` via your `URLParsing` codec.
 - A `NavigationFlow` translates each intent into a list of `Step` values:
-  - `Step.nav(.push/.present/.popToRoot/.dismissSheet)` — structural navigation, dispatched by Iris.
-  - `Step.effect(_)` — consumer-defined side-effects, handled in your coordinator's `apply(_:_:)`.
+  - `Step.nav(.push/.present/.popToRoot/.dismissSheet)`: structural navigation, dispatched by Iris.
+  - `Step.effect(_)`: consumer-defined side-effects, handled in your coordinator's `apply(_:_:)`.
 - `PlumbedCoordinatorBase<Flow>` ships the navigators, facade, executors,
-  and stack/sheet `HandoffRegistry`s out of the box — subclasses just declare
+  and stack/sheet `HandoffRegistry`s out of the box; subclasses just declare
   their `Flow` and override `apply(_:_:)` when there are effects to handle.
 - Latest-wins cancellation so a newer link supersedes one in flight.
 - Hand-off batons let destination views consume the link payload once
@@ -77,15 +77,15 @@ NavigationStack(path: coordinator.nav.pathBinding) {
 at coding agents (excluded from the SwiftPM target). They scaffold a new
 consumer end to end:
 
-- `iris-bootstrap` — generates the Intent / routes / flow / codec /
+- `iris-bootstrap`: generates the Intent / routes / flow / codec /
   coordinator / app-entry wiring.
-- `iris-test-scaffold` — generates Swift Testing suites for codec, flow,
+- `iris-test-scaffold`: generates Swift Testing suites for codec, flow,
   and handoff lifecycle.
-- `iris-audit` — runs eight wiring-coverage checks against an existing
+- `iris-audit`: runs eight wiring-coverage checks against an existing
   consumer.
-- `iris-visualize` — produces a Mermaid diagram of the URL → Intent →
+- `iris-visualize`: produces a Mermaid diagram of the URL → Intent →
   Step → Route → View pipeline.
-- `iris-url-catalog` — produces a Markdown table of every supported URL.
+- `iris-url-catalog`: produces a Markdown table of every supported URL.
 
 ## License
 

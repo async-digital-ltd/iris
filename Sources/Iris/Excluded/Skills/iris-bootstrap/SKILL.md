@@ -642,8 +642,7 @@ never call `remove(for:)`.
 ## Phase 5 — Validate
 
 1. **Build** the project using XcodeBuildMCP to confirm compilation succeeds.
-2. **Run SwiftLint** if configured — fix any violations.
-3. If build fails, read the errors and fix. Common issues:
+2. If build fails, read the errors and fix. Common issues:
    - Missing `import Iris` — add to files that reference framework types
    - Type mismatches in handoff generics — check `HandoffRegistry` type parameters match the flow's `Route` / `SheetRoute`
    - `NavigationFlow` conformance — ensure `operations(intent:)` covers all intent cases and returns `[Step<Route, SheetRoute, SideEffect>]`
