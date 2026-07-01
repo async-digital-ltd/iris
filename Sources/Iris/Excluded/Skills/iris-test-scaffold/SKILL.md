@@ -1,12 +1,12 @@
 ---
 name: iris-test-scaffold
-description: "Generate Swift Testing tests for link flows. Covers URL codec round-trips, navigation step sequences, Handoff deliver/claim cycles, and Baton remapping. Use when asked to 'test links', 'generate link tests', 'scaffold tests', or after running iris-audit."
+description: "Generate Swift Testing tests for link flows. Covers URL codec round-trips, navigation step sequences, and Handoff deliver/claim cycles. Use when asked to 'test links', 'generate link tests', 'scaffold tests', or after running iris-audit."
 compatible_versions: ">=1.0.0"
 ---
 
 # Iris Test Scaffold
 
-Generates Swift Testing test files for an iOS project's Iris integration. Produces up to four test files covering URL codec round-trips, navigation step sequences, Handoff deliver/claim lifecycle, and Baton intent remapping.
+Generates Swift Testing test files for an iOS project's Iris integration. Produces up to three test files covering URL codec round-trips, navigation step sequences, and Handoff deliver/claim lifecycle.
 
 ## Prerequisites
 
