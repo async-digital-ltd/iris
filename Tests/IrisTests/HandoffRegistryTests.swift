@@ -50,7 +50,7 @@ struct HandoffRegistryTests {
         let registry = HandoffRegistry<Route, String>()
         let handoff = registry.register(for: .inbox)
 
-        // Suspend a claimant, then deliver — claimant resumes, registry should
+        // Suspend a claimant, then deliver: claimant resumes, registry should
         // auto-clean. Auto-clean dispatches via a Task to MainActor; await it.
         async let waited: Baton<String>? = handoff.claim()
         await Task.yield()
@@ -78,7 +78,7 @@ struct HandoffRegistryTests {
         let registry = HandoffRegistry<Route, String>()
         let first = registry.register(for: .inbox)
 
-        // Deliver the first — schedules auto-clean. Re-register before the
+        // Deliver the first: schedules auto-clean. Re-register before the
         // clean lands; the identity check must prevent the clean from
         // removing the FRESH handoff.
         async let waitedFirst: Baton<String>? = first.claim()

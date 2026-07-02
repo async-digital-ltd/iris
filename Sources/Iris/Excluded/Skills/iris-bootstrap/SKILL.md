@@ -16,7 +16,7 @@ Scaffolds the full Iris navigation layer into an existing iOS project so every n
 
 ---
 
-## Phase 0 — Version Check
+## Phase 0: Version Check
 
 Before generating any code, verify the Iris version is compatible with this skill's templates.
 
@@ -34,7 +34,7 @@ Before generating any code, verify the Iris version is compatible with this skil
 
 ---
 
-## Phase 1 — Gather Inputs
+## Phase 1: Gather Inputs
 
 Ask the user the following questions interactively. Auto-detect where possible and confirm.
 
@@ -63,11 +63,11 @@ For each screen, collect:
 - **Type**: `push` (NavigationStack destination) or `sheet` (modal presentation)
 - **Parameters**: zero or more typed parameters (e.g. `id: UUID`, `name: String`)
 
-Default if user provides nothing: two screens — "home" (push, no params) and "settings" (push, no params).
+Default if user provides nothing: two screens, "home" (push, no params) and "settings" (push, no params).
 
 ---
 
-## Phase 2 — Detect Project Structure
+## Phase 2: Detect Project Structure
 
 1. **Find the app target directory:**
    ```bash
@@ -79,7 +79,7 @@ Default if user provides nothing: two screens — "home" (push, no params) and "
    If `<TargetDir>/Navigation/` exists, warn the user and ask before overwriting any files.
 
 3. **Check for BundleLocator.swift:**
-   If it exists, note it for later (no action needed). If missing, note but do not create — that is the `bootstrap-project` skill's responsibility.
+   If it exists, note it for later (no action needed). If missing, note but do not create. That is the `bootstrap-project` skill's responsibility.
 
 4. **Detect logging:**
    - Search for `import SLLog` or `AppLogger` in the target. If found, use `AppLogger` / `makeLogger()` / `desc()` pattern.
@@ -91,7 +91,7 @@ Default if user provides nothing: two screens — "home" (push, no params) and "
 
 ---
 
-## Phase 3 — Generate Files
+## Phase 3: Generate Files
 
 Create all files in `<TargetDir>/Navigation/`. Use the templates below, substituting placeholders.
 
@@ -235,8 +235,8 @@ import Iris
 /// Translates `{{APP_INTENT}}` cases into a list of `Step` values for the library
 /// to execute. Structural moves are `Step.nav(.push/.present/.popToRoot/.dismissSheet)`
 /// and are dispatched automatically. Consumer-defined side-effects (if any)
-/// go in the `SideEffect` associated type and surface as `Step.effect(_)` —
-/// the coordinator's `apply(_:_:)` handles those.
+/// go in the `SideEffect` associated type and surface as `Step.effect(_)`.
+/// The coordinator's `apply(_:_:)` handles those.
 enum {{APP_NAME}}Flow: NavigationFlow {
 
     typealias Intent = {{APP_INTENT}}
@@ -354,7 +354,7 @@ import Iris
 /// Subclasses `PlumbedCoordinatorBase<{{APP_NAME}}Flow>` so it inherits the
 /// library's navigators, facade, executors (link + UI), and stack/sheet
 /// `HandoffRegistry`s out of the box. Override `apply(_:_:)` to handle the
-/// flow's `SideEffect` cases — structural cases (push/present/popToRoot/
+/// flow's `SideEffect` cases. Structural cases (push/present/popToRoot/
 /// dismissSheet) are dispatched by the library and never reach here.
 @MainActor
 @Observable
@@ -389,7 +389,7 @@ extension TopLevelRouteCoordinator {
 }
 ```
 
-**Iris handles all structural navigation.** `{{APP_NAME}}Flow.operations(intent:)` returns `Step.nav(.push(_))` / `Step.nav(.present(_))` / etc., and `PlumbedCoordinatorBase`'s inherited `dispatchIfPossible(_:baton:)` routes them through `nav.route.pushRoute(_:registry:baton:)` and `nav.sheet.presentRoute(_:registry:baton:)`. Those methods register a handoff against `stackHandoffs` / `sheetHandoffs`, perform the SwiftUI mutation, and deliver the baton once the destination mounts — the consumer writes none of this any more.
+**Iris handles all structural navigation.** `{{APP_NAME}}Flow.operations(intent:)` returns `Step.nav(.push(_))` / `Step.nav(.present(_))` / etc., and `PlumbedCoordinatorBase`'s inherited `dispatchIfPossible(_:baton:)` routes them through `nav.route.pushRoute(_:registry:baton:)` and `nav.sheet.presentRoute(_:registry:baton:)`. Those methods register a handoff against `stackHandoffs` / `sheetHandoffs`, perform the SwiftUI mutation, and deliver the baton once the destination mounts. The consumer writes none of this any more.
 
 **Override `apply(_:_:)` only when the flow declares side-effects.** Example: a search flow that emits `.clearSearchField` after the navigation completes.
 
@@ -543,7 +543,7 @@ Then wire the commands into the App entry point inside `#if DEBUG`:
 
 ---
 
-## Phase 4 — Modify Existing Files
+## Phase 4: Modify Existing Files
 
 ### 1. App entry point (`<AppName>App.swift`)
 
@@ -634,22 +634,22 @@ case .profile(let id):
 ```
 
 The optional-handoff overload of `.onLink(from:)` no-ops when nothing is
-registered, and the registry auto-cleans on `.delivered` — destination views
+registered, and the registry auto-cleans on `.delivered`. Destination views
 never call `remove(for:)`.
 
 ---
 
-## Phase 5 — Validate
+## Phase 5: Validate
 
 1. **Build** the project using XcodeBuildMCP to confirm compilation succeeds.
 2. If build fails, read the errors and fix. Common issues:
-   - Missing `import Iris` — add to files that reference framework types
-   - Type mismatches in handoff generics — check `HandoffRegistry` type parameters match the flow's `Route` / `SheetRoute`
-   - `NavigationFlow` conformance — ensure `operations(intent:)` covers all intent cases and returns `[Step<Route, SheetRoute, SideEffect>]`
+   - Missing `import Iris`: add to files that reference framework types
+   - Type mismatches in handoff generics: check `HandoffRegistry` type parameters match the flow's `Route` / `SheetRoute`
+   - `NavigationFlow` conformance: ensure `operations(intent:)` covers all intent cases and returns `[Step<Route, SheetRoute, SideEffect>]`
 
 ---
 
-## Phase 6 — Summary
+## Phase 6: Summary
 
 After successful build, print:
 

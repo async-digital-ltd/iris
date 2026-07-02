@@ -16,7 +16,7 @@ Generates Swift Testing test files for an iOS project's Iris integration. Produc
 
 ---
 
-## Phase 0 — Version Check
+## Phase 0: Version Check
 
 Before generating any code, verify the Iris version is compatible with this skill's templates.
 
@@ -34,7 +34,7 @@ Before generating any code, verify the Iris version is compatible with this skil
 
 ---
 
-## Phase 1 — Discover Existing Tests and Navigation Files
+## Phase 1: Discover Existing Tests and Navigation Files
 
 ### 1. Find the test target directory
 
@@ -57,25 +57,25 @@ List all `.swift` files in the test target directory. Read each one to understan
 
 Find and read the project's navigation files to know what to generate tests for:
 
-**Intent enum** — find the app's intent type:
+**Intent enum**: find the app's intent type:
 ```
 grep -rl "case unknown(URL)" --include="*.swift" .
 ```
 Read to extract: enum name, all cases with parameter types.
 
-**Navigation flow enums** — find `NavigationFlow` conformances:
+**Navigation flow enums**: find `NavigationFlow` conformances:
 ```
 grep -rl "NavigationFlow" --include="*.swift" .
 ```
 Read to extract: the flow type name, its `Route` / `SheetRoute` / `SideEffect` associated types, and the `operations(intent:)` switch body.
 
-**URL codec** — find `URLParsing` conformance:
+**URL codec**: find `URLParsing` conformance:
 ```
 grep -rl "URLParsing" --include="*.swift" .
 ```
 Read to extract: `parse(_:)` URL patterns and `url(for:)` build logic, the URL scheme, host constants, query parameter names.
 
-**Sub-intent enums** — look for child intent types used in sheet/sub-coordinator flows:
+**Sub-intent enums**: look for child intent types used in sheet/sub-coordinator flows:
 ```
 grep -rl "NavigationFlow" --include="*.swift" . | xargs grep "associatedtype Intent"
 ```
@@ -85,7 +85,7 @@ Store all discovered types, cases, and parameter shapes before proceeding to gen
 
 ---
 
-## Phase 2 — Generate Test Files
+## Phase 2: Generate Test Files
 
 Generate up to 3 test files. **Only generate files that do not already exist.** If a file exists, read it and report what additional test cases could be added (new intent cases not yet covered, missing edge cases). Never overwrite existing test files.
 
@@ -138,7 +138,7 @@ struct LinkURLCodecTests {
 
 #### Generation rules
 
-**Parse tests** — one per intent case plus edge cases:
+**Parse tests**: one per intent case plus edge cases:
 
 - **No params:**
   ```swift
@@ -192,7 +192,7 @@ Generate additional edge cases based on the codec's parameter requirements:
 - Missing required path components
 - Extra unexpected path segments
 
-**Build tests** — one per intent case:
+**Build tests**: one per intent case:
 
 ```swift
 @Test func build_showInbox() {
@@ -203,7 +203,7 @@ Generate additional edge cases based on the codec's parameter requirements:
 
 For intents with parameters, use deterministic test values (fixed UUIDs, known strings).
 
-**Round-trip tests** — one per intent case:
+**Round-trip tests**: one per intent case:
 
 ```swift
 @Test func roundtrip_showBadge() {
@@ -214,7 +214,7 @@ For intents with parameters, use deterministic test values (fixed UUIDs, known s
 }
 ```
 
-**Helper functions** — append at bottom of file:
+**Helper functions**: append at bottom of file:
 
 ```swift
 private func matches(_ lhs: {{APP_INTENT}}, _ rhs: {{APP_INTENT}}) -> Bool {
@@ -266,7 +266,7 @@ struct {{CHILD}}FlowTests {
 `Equatable` (and `Never` satisfies that), so prefer direct equality on the
 expected step sequence over per-case helpers.
 
-**Push intent tests** — verify `.nav(.popToRoot)` is always first, followed by `.nav(.push(_))`:
+**Push intent tests**: verify `.nav(.popToRoot)` is always first, followed by `.nav(.push(_))`:
 
 ```swift
 @Test func showInbox_emitsPopToRootThenPushInbox() {
@@ -284,7 +284,7 @@ For parameterised push intents, verify the parameter is carried through:
 }
 ```
 
-**Sheet intent tests** — verify NO `.nav(.popToRoot)`, only the present step:
+**Sheet intent tests**: verify NO `.nav(.popToRoot)`, only the present step:
 
 ```swift
 @Test func compose_emitsSinglePresentCompose() {
@@ -303,7 +303,7 @@ For parameterised push intents, verify the parameter is carried through:
 }
 ```
 
-**Side-effect tests** — if the flow declares its own `SideEffect`, assert that
+**Side-effect tests**: if the flow declares its own `SideEffect`, assert that
 the relevant arms emit `.effect(_)`:
 
 ```swift
@@ -313,7 +313,7 @@ the relevant arms emit `.effect(_)`:
 }
 ```
 
-**Child flow tests** — if the project has sub-coordinator flow types (e.g. `ComposeFlow`), generate a separate test struct for each, covering every child intent case. For composite intents that produce multi-step sequences, verify each step in order via array equality.
+**Child flow tests**: if the project has sub-coordinator flow types (e.g. `ComposeFlow`), generate a separate test struct for each, covering every child intent case. For composite intents that produce multi-step sequences, verify each step in order via array equality.
 
 ---
 
@@ -446,7 +446,7 @@ Use the project's own intent type for realistic tests. All Handoff tests must be
     _ = await handoff.claim()
 
     // The handoff transitions to `.delivered`, so the registry auto-removes it.
-    // The remove dispatches back to @MainActor — yield once for it to land.
+    // The remove dispatches back to @MainActor. Yield once for it to land.
     await Task.yield()
     #expect(registry.handoff(for: .inbox) == nil)
 }
@@ -454,20 +454,20 @@ Use the project's own intent type for realistic tests. All Handoff tests must be
 
 Replace `TopLevel.StackRoute` and `.inbox` with the project's actual route type and a representative case.
 
-> **Note:** `HandoffRegistry` does not expose `remove(for:)` or `removeAll()` —
+> **Note:** `HandoffRegistry` does not expose `remove(for:)` or `removeAll()`:
 > the registry auto-clears entries when their handoff transitions to
 > `.delivered`. Don't write tests asserting on those methods.
 
 ---
 
-## Phase 3 — Build and Run Tests
+## Phase 3: Build and Run Tests
 
 1. **Build the test target** using XcodeBuildMCP (or `xcodebuild build-for-testing`). Fix any compilation errors:
-   - Missing imports — add `import Iris` or `import Testing`
-   - Type mismatches — verify intent/route type names match the project's actual types
-   - Actor isolation — add `async` to test functions that call actor methods, add `@MainActor` to tests that use `@MainActor`-isolated types like `HandoffRegistry`
+   - Missing imports: add `import Iris` or `import Testing`
+   - Type mismatches: verify intent/route type names match the project's actual types
+   - Actor isolation: add `async` to test functions that call actor methods, add `@MainActor` to tests that use `@MainActor`-isolated types like `HandoffRegistry`
 
-2. **Run the tests** using XcodeBuildMCP (or `xcodebuild test`). Do NOT use `-quiet` — full output is needed to see pass/fail results.
+2. **Run the tests** using XcodeBuildMCP (or `xcodebuild test`). Do NOT use `-quiet`: full output is needed to see pass/fail results.
 
 3. **Fix failures:**
    - Assertion failures indicate a mismatch between the test expectations and the actual codec/step behaviour. Read the codec or step implementation to correct the expected values.
@@ -475,7 +475,7 @@ Replace `TopLevel.StackRoute` and `.inbox` with the project's actual route type 
 
 ---
 
-## Phase 4 — Report
+## Phase 4: Report
 
 After all tests pass, print:
 

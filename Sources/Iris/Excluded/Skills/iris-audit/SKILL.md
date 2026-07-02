@@ -15,7 +15,7 @@ Scans an iOS project using Iris for link coverage gaps, wiring errors, and URL p
 
 ---
 
-## Phase 0 — Version Check
+## Phase 0: Version Check
 
 Same as `iris-bootstrap`:
 
@@ -25,7 +25,7 @@ Same as `iris-bootstrap`:
 
 ---
 
-## Phase 1 — Locate Navigation Files
+## Phase 1: Locate Navigation Files
 
 Search the project for the files that make up the Iris integration. These are identified by their imports and protocol conformances.
 
@@ -36,57 +36,57 @@ Search the project for the files that make up the Iris integration. These are id
    grep -rl "import Iris" --include="*.swift" .
    ```
 
-2. **Find intent enums** — look for enums conforming to `Sendable, Equatable` that contain a `case unknown(URL)`:
+2. **Find intent enums**: look for enums conforming to `Sendable, Equatable` that contain a `case unknown(URL)`:
    ```
    grep -l "case unknown(URL)" --include="*.swift" .
    ```
    Read each file to extract the intent enum name and all its cases.
 
-3. **Find route enums** — look for namespace enums containing `StackRoute` and/or `SheetRoute`:
+3. **Find route enums**: look for namespace enums containing `StackRoute` and/or `SheetRoute`:
    ```
    grep -l "enum StackRoute" --include="*.swift" .
    ```
    Read each file to extract route namespace names (e.g. `TopLevel`, `Compose`) and all route cases.
 
-4. **Find navigation flow enums** — look for `NavigationFlow` conformance:
+4. **Find navigation flow enums**: look for `NavigationFlow` conformance:
    ```
    grep -l "NavigationFlow" --include="*.swift" .
    ```
    Read each file to extract the flow's `Route`, `SheetRoute`, and `SideEffect` types and the `operations(intent:)` switch body. Each arm returns `[Step<Route, SheetRoute, SideEffect>]`, where `Step.nav(_)` is a structural target the library dispatches and `Step.effect(_)` is a consumer side-effect.
 
-5. **Find URL codec** — look for `URLParsing` conformance:
+5. **Find URL codec**: look for `URLParsing` conformance:
    ```
    grep -l "URLParsing" --include="*.swift" .
    ```
    Read the file to extract `parse(_:)` and `url(for:)` switch cases.
 
-6. **Find coordinators** — look for `RouteCoordinator` conformance:
+6. **Find coordinators**: look for `RouteCoordinator` conformance:
    ```
    grep -l "RouteCoordinator" --include="*.swift" .
    ```
    Read each file to extract `apply(_:_:)` switch cases and the `route(baton:)` convert closure.
 
-7. **Find view destinations** — look for `.navigationDestination(for:` and `.sheet(item:`:
+7. **Find view destinations**: look for `.navigationDestination(for:` and `.sheet(item:`:
    ```
    grep -rn "\.navigationDestination(for:" --include="*.swift" .
    grep -rn "\.sheet(item:" --include="*.swift" .
    ```
    Read surrounding code to extract the switch cases that handle each route.
 
-8. **Find screens reachable only via UI** — look for `.navigationDestination(isPresented:` and `NavigationLink(destination:` and `.sheet(isPresented:`:
+8. **Find screens reachable only via UI**: look for `.navigationDestination(isPresented:` and `NavigationLink(destination:` and `.sheet(isPresented:`:
    ```
    grep -rn "\.navigationDestination(isPresented:" --include="*.swift" .
    grep -rn "NavigationLink(" --include="*.swift" .
    grep -rn "\.sheet(isPresented:" --include="*.swift" .
    grep -rn "\.fullScreenCover(" --include="*.swift" .
    ```
-   These represent screens that navigate via local `@State` booleans rather than route enums — they are **not linkable** by design.
+   These represent screens that navigate via local `@State` booleans rather than route enums; they are **not linkable** by design.
 
 Store all discovered information in a structured mental model before proceeding to checks.
 
 ---
 
-## Phase 2 — Run Checks
+## Phase 2: Run Checks
 
 Execute all 8 checks. For each check, record:
 - **Status**: `pass`, `warn`, or `fail`
@@ -94,7 +94,7 @@ Execute all 8 checks. For each check, record:
 
 ### Category 1: Coverage Gaps
 
-#### Check 1 — Route cases without intent mapping
+#### Check 1: Route cases without intent mapping
 
 For each `StackRoute` and `SheetRoute` case discovered in Phase 1:
 - Search the intent enum(s) for a corresponding intent case
@@ -102,7 +102,7 @@ For each `StackRoute` and `SheetRoute` case discovered in Phase 1:
 
 **Pass criteria:** Every route case has a corresponding intent path.
 
-**How to match:** Read the flow's `operations(intent:)` switch body — each arm returns `Step.nav(.push/.present/...)` values whose payloads are the routes. Trace backwards: step → route. Then check that each route case is reachable from an intent that emits `Step.nav(.push(<route>))` or `Step.nav(.present(<route>))`.
+**How to match:** Read the flow's `operations(intent:)` switch body: each arm returns `Step.nav(.push/.present/...)` values whose payloads are the routes. Trace backwards: step → route. Then check that each route case is reachable from an intent that emits `Step.nav(.push(<route>))` or `Step.nav(.present(<route>))`.
 
 **Report format for failures:**
 ```
@@ -111,7 +111,7 @@ FAIL: Route `TopLevel.StackRoute.badgeInfo` has no intent mapping
   → File: LinkableRoutes.swift:25
 ```
 
-#### Check 2 — Intent cases without URL codec mapping
+#### Check 2: Intent cases without URL codec mapping
 
 For each intent case (excluding `.unknown`):
 - Check it appears as a case in the codec's `parse(_:)` return statements
@@ -126,7 +126,7 @@ FAIL: Intent `.showProfile(id:)` has no URL parse mapping
   → File: Intent.swift:18
 ```
 
-#### Check 3 — Intent cases without flow mapping
+#### Check 3: Intent cases without flow mapping
 
 For each intent case (excluding `.unknown`):
 - Check it appears in the flow's `operations(intent:)` switch body
@@ -140,7 +140,7 @@ FAIL: Intent `.showProfile(id:)` not handled in <Flow>.operations(intent:)
   → File: NavigationFlow.swift
 ```
 
-#### Check 4 — Side-effects without coordinator apply case
+#### Check 4: Side-effects without coordinator apply case
 
 Structural steps (`Step.nav(.push/.present/.popToRoot/.dismissSheet)`) are
 dispatched by the library via `PlumbedCoordinatorBase` and don't need an `apply`
@@ -161,7 +161,7 @@ FAIL: SideEffect `.clearSearchField` not handled in TopLevelRouteCoordinator.app
 
 ### Category 2: Wiring Validation
 
-#### Check 5 — Route cases unhandled in view destinations
+#### Check 5: Route cases unhandled in view destinations
 
 For each route type used in `.navigationDestination(for: <Type>.self)`:
 - Parse the switch body inside the closure
@@ -180,9 +180,9 @@ FAIL: Route `TopLevel.StackRoute.settings` not handled in .navigationDestination
   → File: RootView.swift:33
 ```
 
-**Severity:** This is the highest-severity check — unhandled routes cause runtime crashes.
+**Severity:** This is the highest-severity check: unhandled routes cause runtime crashes.
 
-#### Check 6 — Parse / Build round-trip symmetry
+#### Check 6: Parse / Build round-trip symmetry
 
 Compare the set of intent cases handled in `parse(_:)` with those handled in `url(for:)`:
 - Every parseable intent should be buildable (otherwise you can receive a link but can't generate a URL for sharing)
@@ -197,7 +197,7 @@ WARN: Intent `.showProfile(id:)` is parseable but not buildable
   → File: LinkURLCodec.swift
 ```
 
-#### Check 7 — Handoff consumption for parameterised routes
+#### Check 7: Handoff consumption for parameterised routes
 
 The library's `PlumbedCoordinatorBase` registers + delivers handoffs automatically
 for every `Step.nav(.push(_))` / `Step.nav(.present(_))` via
@@ -207,9 +207,9 @@ baton on the destination view.
 For each parameterised route case (e.g. `.itemDetail(id:)`), check the
 destination view in `.navigationDestination(for:)` / `.sheet(item:)`:
 - It reads the handoff via `routeCoordinator.stackHandoffs.handoff(for: <route>)` (or `sheetHandoffs`)
-- It consumes via `.onLink(from:)` — either the non-optional or the optional-handoff overload
+- It consumes via `.onLink(from:)`, either the non-optional or the optional-handoff overload
 
-For route cases without parameters (e.g. `.inbox`), consumption is optional —
+For route cases without parameters (e.g. `.inbox`), consumption is optional:
 not an error if missing.
 
 **Pass criteria:** Every parameterised route's destination view consumes its handoff.
@@ -222,11 +222,11 @@ WARN: Destination view for `.itemDetail(id:)` does not consume its handoff
 ```
 
 The handoff lifecycle (register on dispatch, auto-remove on `.delivered`) is
-library-managed — never flag a missing `register(for:)` or `remove(for:)` call.
+library-managed; never flag a missing `register(for:)` or `remove(for:)` call.
 
 ### Category 3: URL Pattern Quality
 
-#### Check 8 — URL pattern normalisation
+#### Check 8: URL pattern normalisation
 
 Scan the codec file for common quality issues:
 
@@ -280,7 +280,7 @@ WARN: Query items not sorted in url(for:) for .compose intent
 
 ---
 
-## Phase 3 — Report
+## Phase 3: Report
 
 After all checks complete, print the report in this format:
 
@@ -328,7 +328,7 @@ Checks that passed cleanly. Listed briefly.
 ### Recommendations
 
 Prioritised list of actions:
-1. [Fix failures first — unhandled routes, missing apply cases]
+1. [Fix failures first: unhandled routes, missing apply cases]
 2. [Add link coverage for uncovered routes]
 3. [Improve URL pattern quality]
 4. [Run `iris-test-scaffold` to generate tests for the gaps identified]

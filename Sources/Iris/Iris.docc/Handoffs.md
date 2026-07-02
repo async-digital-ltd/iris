@@ -6,8 +6,8 @@ has mounted.
 ## Overview
 
 A link's payload often needs to reach a screen that isn't on
-screen yet. Pushing `/conversation/42` mounts a new conversation view
-— and that view needs the conversation id (and possibly other context
+screen yet. Pushing `/conversation/42` mounts a new conversation view,
+and that view needs the conversation id (and possibly other context
 from the original URL) to finish its own initialisation.
 
 Embedding the payload inside the route enum's associated values is one
@@ -23,10 +23,10 @@ plain `Hashable` with auto-synthesised conformances.
   plus a ``NavFlow`` correlation id.
 - A ``Handoff`` is a one-shot rendezvous. It supports both
   patterns:
-  - **Producer-first** — the coordinator calls
+  - **Producer-first**: the coordinator calls
     ``Handoff/deliver(_:)`` before the destination view has
     mounted; the baton is buffered.
-  - **Consumer-first** — the destination view calls
+  - **Consumer-first**: the destination view calls
     ``Handoff/claim()`` before the coordinator has delivered;
     the view's task suspends until the baton arrives.
 - A ``HandoffRegistry`` stores the handoffs keyed by route, so the
@@ -67,7 +67,7 @@ struct ConversationView: View {
 ```
 
 The `.task(id:)` modifier restarts the task whenever the handoff
-identity changes — so a re-pushed link to an already-mounted route
+identity changes, so a re-pushed link to an already-mounted route
 registers a fresh handoff that the view picks up on the next render.
 That's why ``HandoffRegistry`` is `@Observable`: views reading
 ``HandoffRegistry/handoff(for:)`` re-render when
@@ -76,7 +76,7 @@ That's why ``HandoffRegistry`` is `@Observable`: views reading
 ## Lifecycle is library-managed
 
 Handoffs auto-remove from the registry once they transition to
-`.delivered` — by any path:
+`.delivered`, by any path:
 
 - A waiter resumed with a posted baton.
 - A buffered baton was claimed.

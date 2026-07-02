@@ -56,7 +56,7 @@ public final class GenericRouteNavigator<R: Hashable & Sendable> {
 
     /// Pushes the route only if it's not already at the top.
     ///
-    /// Honours task cancellation — returns `false` (without mutating the stack)
+    /// Honours task cancellation: returns `false` (without mutating the stack)
     /// when the current task is cancelled.
     ///
     /// - Returns: `true` if pushed, `false` if already at top or cancelled.
@@ -120,7 +120,7 @@ public final class GenericRouteNavigator<R: Hashable & Sendable> {
         } else {
             if let existing = registry.handoff(for: route),
                await existing.deliver(baton) {
-                // Waiter resumed — no fresh handoff, no duplicate push.
+                // Waiter resumed: no fresh handoff, no duplicate push.
             } else {
                 let handoff = registry.register(for: route)
                 await handoff.deliver(baton)
@@ -177,7 +177,7 @@ public final class GenericSheetNavigator<S: Identifiable & Hashable & Sendable> 
 
     /// Presents the sheet only if it's not already the current sheet.
     ///
-    /// Honours task cancellation — returns `false` (without mutating the
+    /// Honours task cancellation: returns `false` (without mutating the
     /// presented sheet) when the current task is cancelled.
     ///
     /// - Returns: `true` if presented, `false` if already shown or cancelled.
@@ -239,7 +239,7 @@ public final class GenericSheetNavigator<S: Identifiable & Hashable & Sendable> 
         } else {
             if let existing = registry.handoff(for: route),
                await existing.deliver(baton) {
-                // Waiter resumed — no fresh handoff, no duplicate present.
+                // Waiter resumed: no fresh handoff, no duplicate present.
             } else {
                 let handoff = registry.register(for: route)
                 await handoff.deliver(baton)

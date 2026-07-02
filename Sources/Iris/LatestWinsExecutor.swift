@@ -44,8 +44,8 @@ public final class LatestWinsExecutor {
     /// Executes an operation, cancelling any previous one in progress.
     ///
     /// `current` holds the work task directly (not a bridge wrapper), so
-    /// `previous?.cancel()` propagates into `operation()`'s `await` points —
-    /// what the "latest wins" name implies. Earlier implementations cancelled
+    /// `previous?.cancel()` propagates into `operation()`'s `await` points,
+    /// which is what the "latest wins" name implies. Earlier implementations cancelled
     /// a bridge that *awaited* the work task, leaving the work task running.
     public func run(
         _ operation: @Sendable @escaping () async -> Void

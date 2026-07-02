@@ -20,7 +20,7 @@ public protocol RouteCoordinator: AnyObject {
     /// Applies a single side-effect emitted by the flow.
     ///
     /// Structural cases (push/present/pop/dismiss) are handled by the library and
-    /// never appear here — this switch only covers the consumer's own
+    /// never appear here; this switch only covers the consumer's own
     /// `SideEffect` cases.
     ///
     /// - Parameters:
@@ -30,7 +30,7 @@ public protocol RouteCoordinator: AnyObject {
 
     /// Dispatches a structural ``NavTarget`` (push/present/pop/dismiss).
     ///
-    /// **Important — keep this declaration on the protocol body.** It must be
+    /// **Important: keep this declaration on the protocol body.** It must be
     /// a protocol requirement (not extension-only) so that
     /// ``PlumbedCoordinatorBase``'s implementation is reached via dynamic
     /// dispatch from ``route(baton:)``.
@@ -42,7 +42,7 @@ public protocol RouteCoordinator: AnyObject {
     /// protocol-extension method, and its call to `self.dispatchIfPossible`
     /// resolves at compile time. If this declaration is moved into the
     /// extension, every nav step (push/present/pop/dismiss) will resolve to
-    /// the extension's empty default — `PlumbedCoordinatorBase`'s override
+    /// the extension's empty default: `PlumbedCoordinatorBase`'s override
     /// never runs and structural navigation silently no-ops. Effects keep
     /// working (``apply(_:_:)`` is a protocol requirement) which makes the
     /// regression easy to miss in tests that only assert on effect state.
@@ -59,7 +59,7 @@ public extension RouteCoordinator {
     /// Pause inserted between steps so SwiftUI can commit each transition's
     /// animation (sheet dismiss, stack push, etc.) before the next step fires.
     ///
-    /// Defaults to `.zero` — right for non-animated chains. Coordinators driving
+    /// Defaults to `.zero`, which is right for non-animated chains. Coordinators driving
     /// mixed sheet/stack flows should override with a duration that covers the
     /// longest transition (~700ms is a safe floor for sheet-dismiss → stack-push).
     static var interStepAnimationPause: Duration { .zero }
@@ -81,7 +81,7 @@ public extension RouteCoordinator {
                     switch op {
                     case .nav(let target):
                         // `dispatchIfPossible` MUST be a protocol requirement
-                        // for this call to dispatch dynamically — see the doc
+                        // for this call to dispatch dynamically; see the doc
                         // on the requirement declaration above.
                         await self.dispatchIfPossible(target, baton: baton)
                     case .effect(let effect):
@@ -109,7 +109,7 @@ extension RouteCoordinator {
     /// Dispatches a structural ``NavTarget`` to the given facade and handoff
     /// registries.
     ///
-    /// Internal — ``PlumbedCoordinatorBase`` exposes a 2-arg
+    /// Internal: ``PlumbedCoordinatorBase`` exposes a 2-arg
     /// ``PlumbedCoordinatorBase/dispatchIfPossible(_:baton:)`` that forwards
     /// here using the base's nav and registries.
     @MainActor
@@ -134,8 +134,8 @@ extension RouteCoordinator {
     }
 }
 
-/// Open base class for coordinators that want the library's plumbing — navigators,
-/// facade, executors, and handoff registries — out of the box.
+/// Open base class for coordinators that want the library's plumbing (navigators,
+/// facade, executors, and handoff registries) out of the box.
 ///
 /// Subclasses declare:
 /// - the `Flow` generic parameter (a ``NavigationFlow`` defining their
@@ -143,8 +143,8 @@ extension RouteCoordinator {
 /// - their own observable state (`@Observable` on the subclass)
 /// - an override of ``apply(_:_:)`` that handles their flow's side-effects
 ///
-/// Everything else — `linkSwitcher`, `uiSwitcher`, `nav`, `stackHandoffs`,
-/// `sheetHandoffs`, and the structural step dispatcher — is inherited.
+/// Everything else (`linkSwitcher`, `uiSwitcher`, `nav`, `stackHandoffs`,
+/// `sheetHandoffs`, and the structural step dispatcher) is inherited.
 ///
 /// ```swift
 /// @MainActor @Observable
@@ -185,7 +185,7 @@ where Flow.Route: Hashable & Sendable, Flow.SheetRoute: Identifiable & Hashable 
 
     /// Subclasses override to handle their flow's side-effects.
     ///
-    /// The default implementation is a no-op — appropriate for a `SideEffect`
+    /// The default implementation is a no-op, appropriate for a `SideEffect`
     /// of `Never`, which makes any call here unreachable anyway.
     open func apply(_ effect: Flow.SideEffect, _ baton: Baton<Intent>) async {}
 

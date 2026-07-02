@@ -15,7 +15,7 @@ Generates a Mermaid flowchart of the complete link routing tree in an iOS projec
 
 ---
 
-## Phase 0 — Version Check
+## Phase 0: Version Check
 
 Same as `iris-bootstrap`:
 
@@ -25,7 +25,7 @@ Same as `iris-bootstrap`:
 
 ---
 
-## Phase 1 — Discover the Routing Tree
+## Phase 1: Discover the Routing Tree
 
 Search the project for all navigation files and build a structured model of the routing tree.
 
@@ -36,37 +36,37 @@ Search the project for all navigation files and build a structured model of the 
    grep -rl "import Iris" --include="*.swift" .
    ```
 
-2. **Find intent enums** — look for enums conforming to `Sendable, Equatable` that contain a `case unknown(URL)`:
+2. **Find intent enums**: look for enums conforming to `Sendable, Equatable` that contain a `case unknown(URL)`:
    ```
    grep -l "case unknown(URL)" --include="*.swift" .
    ```
    Read each file to extract the intent enum name and all its cases (including nested intent enums like `ComposeIntent`).
 
-3. **Find route enums** — look for namespace enums containing `StackRoute` and/or `SheetRoute`:
+3. **Find route enums**: look for namespace enums containing `StackRoute` and/or `SheetRoute`:
    ```
    grep -l "enum StackRoute" --include="*.swift" .
    ```
    Read each file to extract route namespace names (e.g. `TopLevel`, `Compose`) and all route cases.
 
-4. **Find navigation flow enums** — look for `NavigationFlow` conformance:
+4. **Find navigation flow enums**: look for `NavigationFlow` conformance:
    ```
    grep -l "NavigationFlow" --include="*.swift" .
    ```
    Read each file to extract the flow's `Route`, `SheetRoute`, and `SideEffect` types and the `operations(intent:)` switch body. Each arm returns `[Step<Route, SheetRoute, SideEffect>]`, where `Step.nav(_)` is a structural target the library dispatches and `Step.effect(_)` is a consumer side-effect.
 
-5. **Find URL codec** — look for `URLParsing` conformance:
+5. **Find URL codec**: look for `URLParsing` conformance:
    ```
    grep -l "URLParsing" --include="*.swift" .
    ```
    Read the file to extract `parse(_:)` switch cases. Map each URL pattern to the intent it returns.
 
-6. **Find coordinators** — look for `RouteCoordinator` conformance:
+6. **Find coordinators**: look for `RouteCoordinator` conformance:
    ```
    grep -l "RouteCoordinator" --include="*.swift" .
    ```
    Read each file to extract `apply(_:_:)` switch cases. Map each step to the route it navigates to.
 
-7. **Find view destinations** — look for `.navigationDestination(for:` and `.sheet(item:`:
+7. **Find view destinations**: look for `.navigationDestination(for:` and `.sheet(item:`:
    ```
    grep -rn "\.navigationDestination(for:" --include="*.swift" .
    grep -rn "\.sheet(item:" --include="*.swift" .
@@ -88,7 +88,7 @@ Store the complete chain for every intent before proceeding to diagram generatio
 
 ---
 
-## Phase 2 — Generate Mermaid Diagram
+## Phase 2: Generate Mermaid Diagram
 
 Produce a Mermaid `flowchart LR` diagram with subgraphs for each layer.
 
@@ -182,11 +182,11 @@ flowchart LR
 
 ### Handling shared steps
 
-The `.popToRoot` step is typically shared across multiple intents. Represent it once in the Steps subgraph and draw edges from all intents that use it. Do not draw an edge from `.popToRoot` to a route — it does not produce a route; it clears the stack.
+The `.popToRoot` step is typically shared across multiple intents. Represent it once in the Steps subgraph and draw edges from all intents that use it. Do not draw an edge from `.popToRoot` to a route: it does not produce a route; it clears the stack.
 
 ---
 
-## Phase 3 — Output
+## Phase 3: Output
 
 ### 1. Print the diagram
 
@@ -236,7 +236,7 @@ After the diagram, print a summary table listing every traced chain:
 If no `URLParsing` conformance is found:
 - Skip the URLs subgraph entirely.
 - Generate the diagram starting from Intents: `Intent → Steps → Routes → Views`.
-- Note in the output: "No URL codec found — URL layer omitted."
+- Note in the output: "No URL codec found; URL layer omitted."
 
 ### Uncovered routes
 

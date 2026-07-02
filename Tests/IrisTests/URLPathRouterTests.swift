@@ -105,7 +105,7 @@ struct URLPathRouterTests {
     }
 
     @Test func wrongPathLengthReturnsNil() {
-        // pattern is "conversation/:id" (host + 1 segment) — three segments
+        // pattern is "conversation/:id" (host + 1 segment), so three segments
         // means the multi-capture pattern doesn't match either.
         let url = URL(string: "demo://conversation/scrum/extra")!
         #expect(Self.router.parse(url) == nil)
@@ -176,7 +176,7 @@ struct URLPathRouterTests {
     /// `URLQueryItem` does the encoding for us; this confirms a query with
     /// URL-significant characters survives parse → emit → parse.
     @Test func searchQueryWithSpecialCharactersRoundTrips() {
-        let intent = Intent.search(query: "mock & rob#1")
+        let intent = Intent.search(query: "mock & roll#1")
         guard let url = Self.router.url(for: intent) else {
             Issue.record("emit returned nil"); return
         }

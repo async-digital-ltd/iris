@@ -40,7 +40,7 @@ struct NavFlowScopeTests {
         NavFlow.withScope(flow) {
             #expect(NavFlow.current == flow)
         }
-        // After exit, no scope is bound — `current` returns a fresh tap flow
+        // After exit, no scope is bound: `current` returns a fresh tap flow
         // (not the previously-bound flow, not a stable sentinel).
         let after = NavFlow.current
         #expect(after.source == "tap")

@@ -22,7 +22,7 @@ struct LatestWinsExecutorTests {
         let executor = LatestWinsExecutor(policy: .fireAndForgetCancel)
         let outcome = Outcome()
 
-        // First operation sleeps for 300ms then marks reached — unless cancelled.
+        // First operation sleeps for 300ms then marks reached (unless cancelled).
         executor.run {
             try? await Task.sleep(for: .milliseconds(300))
             // After cancellation, Task.sleep throws and is swallowed by try?,
@@ -35,7 +35,7 @@ struct LatestWinsExecutorTests {
         // Let the first task enter its sleep.
         try? await Task.sleep(for: .milliseconds(50))
 
-        // Replace — should propagate cancellation into the first operation.
+        // Replace: should propagate cancellation into the first operation.
         executor.run {}
 
         // Wait well past when the first sleep would have completed naturally.

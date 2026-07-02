@@ -1,6 +1,6 @@
 # ``Iris``
 
-Route incoming URLs — custom-scheme deep links and Universal Links alike —
+Route incoming URLs (custom-scheme deep links and Universal Links alike)
 into typed SwiftUI navigation, without hand-rolling navigation plumbing for
 each new screen.
 
@@ -14,20 +14,20 @@ URL  ──parse──▶  Intent  ──operations──▶  [Step]  ──disp
 
 Each stage owns one responsibility:
 
-- **Parsing** — ``URLParsing`` converts an incoming `URL` into a
+- **Parsing**: ``URLParsing`` converts an incoming `URL` into a
   consumer-defined `Intent`. ``URLPathRouter`` is a ready-made table-driven
   implementation; consumers can also write their own codec.
-- **Flow** — A ``NavigationFlow`` declares how each `Intent` decomposes into
+- **Flow**: A ``NavigationFlow`` declares how each `Intent` decomposes into
   an ordered list of ``Step`` values. Each step is either a structural
   ``NavTarget`` (push, present, pop, dismiss) or a consumer-defined
   side-effect.
-- **Dispatch** — A coordinator conforming to ``RouteCoordinator``
+- **Dispatch**: A coordinator conforming to ``RouteCoordinator``
   applies the steps in order. Subclassing ``PlumbedCoordinatorBase`` gives a
   consumer the navigators, facade, executors, and registries pre-wired.
-- **Cancellation** — ``LatestWinsExecutor`` ensures only the most recent
+- **Cancellation**: ``LatestWinsExecutor`` ensures only the most recent
   link runs to completion; earlier flows are cancelled at their next
   `await` point.
-- **Hand-off** — ``HandoffRegistry`` and ``Handoff`` deliver the
+- **Hand-off**: ``HandoffRegistry`` and ``Handoff`` deliver the
   original ``Baton`` to the destination view once it has mounted,
   so the screen can finish initialising itself from the link's payload.
 

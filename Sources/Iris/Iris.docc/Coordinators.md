@@ -8,20 +8,20 @@ A coordinator is the runtime piece that takes a ``Baton``,
 asks its ``NavigationFlow`` for the matching ``Step`` list, and applies
 the steps in order. Iris ships two entry points:
 
-- ``RouteCoordinator`` — the protocol. Implement it directly if
+- ``RouteCoordinator``: the protocol. Implement it directly if
   the consumer needs full control of its own navigator wiring.
-- ``PlumbedCoordinatorBase`` — an open class that bundles every moving
+- ``PlumbedCoordinatorBase``: an open class that bundles every moving
   part the coordinator needs. Almost every consumer wants this.
 
 ## Subclassing PlumbedCoordinatorBase
 
 The base class supplies:
 
-- Two ``LatestWinsExecutor`` instances — one for links, one for
+- Two ``LatestWinsExecutor`` instances: one for links, one for
   UI taps.
 - ``GenericRouteNavigator`` and ``GenericSheetNavigator``, plus a
   ``NavigationFacade`` that owns them.
-- Two ``HandoffRegistry`` instances — one keyed by stack route, one
+- Two ``HandoffRegistry`` instances: one keyed by stack route, one
   by sheet route.
 - A default ``RouteCoordinator/dispatchIfPossible(_:baton:)``
   that routes ``NavTarget`` values through the facade.
@@ -65,7 +65,7 @@ NavigationStack(path: coordinator.nav.pathBinding) {
 ```
 
 The facade also surfaces direct methods for cases where a tap site
-needs to drive the navigator without going through a link —
+needs to drive the navigator without going through a link:
 ``NavigationFacade/popToRoot(flow:)`` and
 ``NavigationFacade/dismissSheet(flow:)``.
 
@@ -87,12 +87,12 @@ When a baton arrives, the coordinator's `route(baton:)` method:
    ``RouteCoordinator/interStepAnimationPause`` between them
    when that pause is non-zero.
 
-The default `interStepAnimationPause` is `.zero` — right for
+The default `interStepAnimationPause` is `.zero`, which is right for
 non-animated chains. Coordinators that drive mixed sheet/stack flows
 should override with a duration that covers the longest transition
 (~700ms is a safe floor for sheet-dismiss → stack-push).
 
-## Dispatch is dynamic — and that matters
+## Dispatch is dynamic, and that matters
 
 ``RouteCoordinator/dispatchIfPossible(_:baton:)`` is declared
 on the protocol body deliberately, not in an extension. Protocol-body

@@ -8,7 +8,7 @@ public extension Task where Success == Never, Failure == Never {
     /// presentation) before execution continues.
     ///
     /// Despite the name, this is a `Task.sleep`, not a `Task.yield()`.
-    /// `Task.yield()` may stay in the same main-actor turn — SwiftUI applies
+    /// `Task.yield()` may stay in the same main-actor turn: SwiftUI applies
     /// navigation changes asynchronously, so we need a real suspension that
     /// reliably pushes execution to the next iteration. The duration lives on
     /// ``MainRunLoopTick`` as a single source of truth.

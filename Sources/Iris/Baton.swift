@@ -9,7 +9,7 @@ import Foundation
 ///
 /// Identity semantics: `Equatable` and `Hashable` are **by `id` only**. Two
 /// batons with identical `intent` and `flow` compare unequal because each
-/// `init` generates a fresh `id` — a baton is a one-shot event reference,
+/// `init` generates a fresh `id`; a baton is a one-shot event reference,
 /// not a value. Use ``intent`` and ``flow`` directly if you need to compare
 /// payloads.
 public struct Baton<Intent: Sendable & Equatable>: Sendable, Equatable, Identifiable, Hashable, CustomDebugStringConvertible {
@@ -66,8 +66,8 @@ public actor Handoff<Intent: Sendable & Equatable> {
 
     private var state: State = .initial
 
-    /// Called exactly once, when the handoff first transitions to `.delivered`
-    /// — from any path (waiter resumed, buffered baton claimed, waiter
+    /// Called exactly once, when the handoff first transitions to `.delivered`,
+    /// from any path (waiter resumed, buffered baton claimed, waiter
     /// cancelled). Set by ``HandoffRegistry`` so the registry can auto-clean
     /// the entry. The closure receives an ``ObjectIdentifier`` so the
     /// registry can compare identity before removing (a fresh registration
@@ -125,7 +125,7 @@ public actor Handoff<Intent: Sendable & Equatable> {
     ///
     /// If the awaiting task is cancelled while suspended, the handoff transitions
     /// to `.delivered` and the call returns `nil`. Subsequent ``deliver(_:)`` calls
-    /// are no-ops — handoffs are one-shot.
+    /// are no-ops; handoffs are one-shot.
     ///
     /// - Returns: The baton if this caller is the sole claimant; otherwise `nil`.
     public func claim() async -> Baton<Intent>? {
