@@ -18,7 +18,7 @@ public protocol URLParsing: Sendable {
 }
 ```
 
-Malformed URLs are handled inside the codec — typically by returning a
+Malformed URLs are handled inside the codec, typically by returning a
 fallback intent (`.unknown`, `.openHome`, etc.). Throwing isn't part of
 the contract; the parser is expected to always return *something*.
 
@@ -78,9 +78,9 @@ let router = URLPathRouter<MyIntent>(
 
 The router walks the list in order:
 
-- **Parsing** — first matching ``URLPattern`` wins; the pattern's
+- **Parsing**: first matching ``URLPattern`` wins; the pattern's
   captures arrive in the route's `parse` closure as ``URLCaptures``.
-- **Emitting** — first non-nil ``URLEmission`` wins.
+- **Emitting**: first non-nil ``URLEmission`` wins.
 
 Because parse and emit share a `URLRoute` value, an intent that the
 parser knows about can't silently lose its emit case (or vice versa).
@@ -97,7 +97,7 @@ That's the whole reason the type exists.
 | `host/:name` | `:name` becomes a captured value in ``URLCaptures``. |
 | `host?q&r` | Query parameter names that become captures. |
 
-Query captures are always optional from the matcher's perspective —
+Query captures are always optional from the matcher's perspective:
 absence means no entry in ``URLCaptures``.
 
 ### Encoding
@@ -105,14 +105,14 @@ absence means no entry in ``URLCaptures``.
 ``URLPathRouter`` percent-encodes path components segment-by-segment, so
 a capture value containing `/`, `?`, `#`, spaces, or non-ASCII
 characters survives the round trip. `parse(_:)` decodes from
-`percentEncodedPath` segment-by-segment as well — an encoded `/`
+`percentEncodedPath` segment-by-segment as well: an encoded `/`
 (`%2F`) inside a single segment isn't accidentally treated as a path
 separator. Query items are encoded by `URLComponents`.
 
 ## Multicasting parsed batons
 
-When more than one part of the app cares about the same link —
-say, both the active screen and an analytics observer — wrap the codec
+When more than one part of the app cares about the same link
+(say, both the active screen and an analytics observer), wrap the codec
 in a ``Broadcaster``:
 
 ```swift

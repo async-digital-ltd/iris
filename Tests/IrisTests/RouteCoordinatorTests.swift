@@ -106,7 +106,7 @@ struct RouteCoordinatorTests {
         let baton1 = Baton(intent: TestIntent(value: "a"), flow: NavFlow(source: "first"))
         let baton2 = Baton(intent: TestIntent(value: "b"), flow: NavFlow(source: "second"))
 
-        // First dispatch — pushes route and registers handoff.
+        // First dispatch: pushes route and registers handoff.
         await coordinator.dispatch(
             .push(route),
             on: coordinator.nav,
@@ -115,7 +115,7 @@ struct RouteCoordinatorTests {
             baton: baton1
         )
 
-        // Second dispatch to same route — must NOT duplicate the stack entry.
+        // Second dispatch to same route: must NOT duplicate the stack entry.
         await coordinator.dispatch(
             .push(route),
             on: coordinator.nav,
@@ -131,7 +131,7 @@ struct RouteCoordinatorTests {
     //
     // Before `dispatchIfPossible` was declared on the protocol, the extension's
     // `route(baton:)` called `self.dispatchIfPossible(...)` via static dispatch
-    // and resolved to the extension's empty default — `PlumbedCoordinatorBase`'s
+    // and resolved to the extension's empty default, so `PlumbedCoordinatorBase`'s
     // implementation never ran. Effects went through `apply(_:_:)` (a protocol
     // requirement, dynamically dispatched) and worked, but nav steps silently
     // no-op'd. This test fires a baton whose ops include push/popToRoot and
@@ -171,7 +171,7 @@ struct RouteCoordinatorTests {
         async let waited: Baton<TestIntent>? = existingHandoff.claim()
         await Task.yield()
 
-        // Push to already-top — should deliver to the existing waiter, not
+        // Push to already-top: should deliver to the existing waiter, not
         // register a new handoff, not duplicate the stack.
         await coordinator.dispatch(
             .push(route),
@@ -187,7 +187,7 @@ struct RouteCoordinatorTests {
         // Registry auto-cleans entries on `.delivered`. The cleanup happens via
         // a MainActor task scheduled by the handoff actor, so it may or may
         // not have landed by the time we check. The invariant we care about is
-        // "the entry was never replaced by a fresh handoff" — so either nil
+        // "the entry was never replaced by a fresh handoff", so either nil
         // (cleaned) or the same instance (not yet cleaned) are both fine; a
         // *different* handoff would be a regression.
         let current = coordinator.stackHandoffs.handoff(for: route)

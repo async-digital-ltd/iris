@@ -16,7 +16,7 @@ Extracts every supported URL pattern from a project's `URLParsing`-conforming co
 
 ---
 
-## Phase 0 — Version Check
+## Phase 0: Version Check
 
 1. **Find the Iris dependency:**
    - Check the project's `Package.swift` for a `.package(path:)` or `.package(url:)` referencing Iris
@@ -32,7 +32,7 @@ Extracts every supported URL pattern from a project's `URLParsing`-conforming co
 
 ---
 
-## Phase 1 — Discover the URL Codec
+## Phase 1: Discover the URL Codec
 
 ### Step 1: Find the codec file
 
@@ -69,10 +69,10 @@ Extract every buildable pattern by analysing the switch body:
 ### Step 4: Read the `LinkRoute` constants enum
 
 Extract:
-- `scheme` — the URL scheme string
-- `Host` — all host constants
-- `Path` — all path constants (if present)
-- `QueryParam` / `Query` — all query parameter name constants (if present)
+- `scheme`: the URL scheme string
+- `Host`: all host constants
+- `Path`: all path constants (if present)
+- `QueryParam` / `Query`: all query parameter name constants (if present)
 
 ### Step 5: Read the intent enum
 
@@ -86,7 +86,7 @@ Read all cases to build a complete list of intents for validation in Phase 3.
 
 ---
 
-## Phase 2 — Generate Catalog
+## Phase 2: Generate Catalog
 
 Build the catalog from the data extracted in Phase 1. Produce two output formats depending on user preference.
 
@@ -165,21 +165,21 @@ Build the catalog from the data extracted in Phase 1. Produce two output formats
 
 ---
 
-## Phase 3 — Validation
+## Phase 3: Validation
 
 Cross-reference the catalog against the intent enum to surface gaps.
 
-### Check 1 — Undocumented intents
+### Check 1: Undocumented intents
 
 For every intent case (excluding `.unknown`):
 - Verify it appears as a return value in `parse(_:)`
 - If an intent has no URL pattern that produces it, flag it:
 
 ```
-WARN: Intent `.showSettings` has no URL pattern — not reachable via link
+WARN: Intent `.showSettings` has no URL pattern, so it is not reachable via link
 ```
 
-### Check 2 — Parse / Build symmetry
+### Check 2: Parse / Build symmetry
 
 Compare intents covered by `parse(_:)` with those covered by `url(for:)`:
 
@@ -194,7 +194,7 @@ Compare intents covered by `parse(_:)` with those covered by `url(for:)`:
     → Generated URLs cannot be opened by the app
   ```
 
-### Check 3 — Dead patterns
+### Check 3: Dead patterns
 
 Look for URL patterns in `parse(_:)` that map to `.unknown` or are unreachable due to earlier guards. Flag as:
 
@@ -218,7 +218,7 @@ Print a summary table after the catalog:
 
 ---
 
-## Phase 4 — Output
+## Phase 4: Output
 
 1. **Print** the catalog to the conversation.
 2. **Write to file:** `<ProjectRoot>/link-catalog.md` (or `link-catalog.json` if JSON was requested).
@@ -243,7 +243,7 @@ When an intent case wraps a sub-intent type (e.g. `.compose(ComposeIntent)` wher
 ### Constants enum missing
 If `LinkRoute` is not found, extract scheme, hosts, and query param names directly from string literals in the codec. Flag a warning:
 ```
-WARN: No LinkRoute constants enum found — URL strings are hardcoded in the codec
+WARN: No LinkRoute constants enum found: URL strings are hardcoded in the codec
 ```
 
 ### Intent enum in a separate module

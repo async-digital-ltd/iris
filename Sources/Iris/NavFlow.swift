@@ -50,7 +50,7 @@ extension NavFlow {
     /// The ambient `NavFlow` for the current task.
     ///
     /// Inside ``withScope(_:_:)`` returns the bound flow. Outside any scope
-    /// returns a *fresh* `NavFlow(source: "tap")` per read — so navigator calls
+    /// returns a *fresh* `NavFlow(source: "tap")` per read, so navigator calls
     /// at tap sites get a correlatable flow id without an explicit
     /// ``NavFlow/tap(_:)`` wrap. Multi-call sequences that need to share a
     /// single flow id should still wrap in ``withScope(_:_:)`` or
@@ -96,7 +96,7 @@ extension NavFlow {
     /// Sugar for `withScope(NavFlow(source: "tap")) { … }`. Use when multiple
     /// navigator calls inside the closure should share a single flow id for
     /// log correlation. For a single navigator call, the wrap is no longer
-    /// needed — ``current`` already returns a fresh tap flow outside any
+    /// needed: ``current`` already returns a fresh tap flow outside any
     /// scope.
     @discardableResult
     public static func tap<R>(_ body: () throws -> R) rethrows -> R {

@@ -10,9 +10,9 @@ For deeper conceptual reading, the DocC catalogue and the `Sources/Iris/Excluded
 
 Five decisions wire a host app into the library:
 
-1. `Intent` enum — the consumer-defined verbs the app can be driven into.
-2. `Route` and `SheetRoute` enums — the destinations a stack push or sheet present can land on.
-3. `SideEffect` enum (or `Never`) — non-navigation state writes the URL needs to drive (search filters, scrolls, overlays).
+1. `Intent` enum: the consumer-defined verbs the app can be driven into.
+2. `Route` and `SheetRoute` enums: the destinations a stack push or sheet present can land on.
+3. `SideEffect` enum (or `Never`): non-navigation state writes the URL needs to drive (search filters, scrolls, overlays).
 4. A `NavigationFlow` conformance whose `operations(intent:)` returns an ordered `[Step]`.
 5. A coordinator subclassing `PlumbedCoordinatorBase<Flow>`, optionally overriding `apply(_:_:)`.
 
@@ -131,14 +131,14 @@ struct AppURLCodec {
 
 Pattern grammar for `URLRoute`:
 
-- `host/segment` — literal path segment after the host.
-- `host/:name` — named capture, retrievable via `captures["name"]`.
-- `host?q&r` — query parameter names; values surface via `captures["q"]`.
-- `host` — bare host with no path or query.
+- `host/segment`: literal path segment after the host.
+- `host/:name`: named capture, retrievable via `captures["name"]`.
+- `host?q&r`: query parameter names; values surface via `captures["q"]`.
+- `host`: bare host with no path or query.
 
-Parse and emit live on the same `URLRoute` so the pair cannot drift apart silently. `URLEmission` carries only the path segments AFTER the host — `URLPathRouter` already knows the host from the pattern, so `URLEmission(id.rawValue)` for `"profile/:id"` produces `myapp://profile/<id>`, not `myapp://profile/profile/<id>`.
+Parse and emit live on the same `URLRoute` so the pair cannot drift apart silently. `URLEmission` carries only the path segments AFTER the host; `URLPathRouter` already knows the host from the pattern, so `URLEmission(id.rawValue)` for `"profile/:id"` produces `myapp://profile/<id>`, not `myapp://profile/profile/<id>`.
 
-For an alternative state-aware codec that resolves the same URL to different intents depending on current navigation state, write a custom `URLParsing` conformance that takes a snapshot. See the showcase piece on the state-aware resolver in the AD vault for a worked example. The basic case is the table-driven router above.
+For an alternative state-aware codec that resolves the same URL to different intents depending on current navigation state, write a custom `URLParsing` conformance that takes a snapshot. See the state-aware resolver case study at <https://async-digital.com/case-studies/deep-linking/state-aware-resolver/> for a worked example. The basic case is the table-driven router above.
 
 ### 6. App entry
 
@@ -218,7 +218,7 @@ final class AppCoordinator: PlumbedCoordinatorBase<AppFlow> {
 }
 ```
 
-Views read `coordinator.searchQuery` directly. Taps that want the same write pattern call helper methods on the coordinator or construct a URL and call `open(_:)` — see the control-surface showcase piece for the "one apply switch for taps and URLs" pattern.
+Views read `coordinator.searchQuery` directly. Taps that want the same write pattern call helper methods on the coordinator or construct a URL and call `open(_:)`; see the control-surface case study at <https://async-digital.com/case-studies/deep-linking/control-surface/> for the "one apply switch for taps and URLs" pattern.
 
 `apply` runs on `@MainActor` and is `async`. Check `Task.isCancelled` if a single effect's branch does long work; the base class checks cancellation between steps automatically.
 
@@ -246,7 +246,7 @@ When a destination view needs the original `Baton` (typically to inspect the int
 
 ## Multicast subscriptions
 
-If multiple subsystems need to observe link arrivals (the coordinator plus an analytics surface, for instance), wire a `Broadcaster<URLCodec>`. It parses URLs once, wraps them in batons, and yields to all active subscribers. New subscribers receive the last baton by default. Create one broadcaster per app, not per URL — it is an actor designed to be long-lived.
+If multiple subsystems need to observe link arrivals (the coordinator plus an analytics surface, for instance), wire a `Broadcaster<URLCodec>`. It parses URLs once, wraps them in batons, and yields to all active subscribers. New subscribers receive the last baton by default. Create one broadcaster per app, not per URL: it is an actor designed to be long-lived.
 
 ## Anti-patterns
 
@@ -262,11 +262,11 @@ enum AppEffect {
 }
 ```
 
-Push, present, pop, and dismiss are structural — express them as `Step.nav(.push(...))` etc. The library's executor dispatches them for free. Moving them into `SideEffect` duplicates the navigators' job in the consumer's `apply` switch and bypasses the library's animation-pause handling between structural steps.
+Push, present, pop, and dismiss are structural: express them as `Step.nav(.push(...))` etc. The library's executor dispatches them for free. Moving them into `SideEffect` duplicates the navigators' job in the consumer's `apply` switch and bypasses the library's animation-pause handling between structural steps.
 
 ### Do not call `apply(_:_:)` from views
 
-`apply` is the protocol requirement the library calls. Views read coordinator state; they do not drive the apply switch. To trigger an effect from a tap, either expose a coordinator method (`coordinator.tapApplySearch(query:)`) that writes the same property `apply` would, or construct the equivalent URL and call `coordinator.open(_:)` so the tap and the URL hit the same apply switch. The latter pattern is documented in the control-surface showcase piece.
+`apply` is the protocol requirement the library calls. Views read coordinator state; they do not drive the apply switch. To trigger an effect from a tap, either expose a coordinator method (`coordinator.tapApplySearch(query:)`) that writes the same property `apply` would, or construct the equivalent URL and call `coordinator.open(_:)` so the tap and the URL hit the same apply switch. The latter pattern is documented in the control-surface case study.
 
 ### Do not bypass `route(baton:)` and apply steps manually
 
@@ -290,15 +290,15 @@ Iris drives `.sheet(item:)` from the sheet binding, which needs `Identifiable`. 
 
 ### Do not store the `Baton` long-term
 
-Batons are one-shot event references. `Equatable` and `Hashable` compare by `id` only — two batons with identical `intent` and `flow` compare unequal because each `init` generates a fresh `id`. Storing them defeats their identity semantics. If you need the intent later, store the intent.
+Batons are one-shot event references. `Equatable` and `Hashable` compare by `id` only: two batons with identical `intent` and `flow` compare unequal because each `init` generates a fresh `id`. Storing them defeats their identity semantics. If you need the intent later, store the intent.
 
 ## Where else to look
 
 - DocC catalogue at `Sources/Iris/Iris.docc/`. Renders in Xcode's documentation viewer and on Swift Package Index.
 - Five scaffolding skill templates at `Sources/Iris/Excluded/Skills/*/SKILL.md`:
-  - `iris-bootstrap` — generates the Intent / routes / flow / codec / coordinator / app-entry wiring end to end.
-  - `iris-test-scaffold` — generates Swift Testing suites for codec, flow, and handoff lifecycle.
-  - `iris-audit` — runs eight wiring-coverage checks against an existing consumer.
-  - `iris-visualize` — produces a Mermaid diagram of the URL to Intent to Step to Route to View pipeline.
-  - `iris-url-catalog` — produces a Markdown table of every supported URL.
-- Showcase pieces in the AD vault (`content/iris-*-showcase.md`) for measurement-led writeups on race handling, surface area, state-aware resolution, and the control-surface pattern.
+  - `iris-bootstrap`: generates the Intent / routes / flow / codec / coordinator / app-entry wiring end to end.
+  - `iris-test-scaffold`: generates Swift Testing suites for codec, flow, and handoff lifecycle.
+  - `iris-audit`: runs eight wiring-coverage checks against an existing consumer.
+  - `iris-visualize`: produces a Mermaid diagram of the URL to Intent to Step to Route to View pipeline.
+  - `iris-url-catalog`: produces a Markdown table of every supported URL.
+- The deep-linking case-study series at <https://async-digital.com/case-studies/deep-linking/> for measurement-led writeups on race handling, surface area, state-aware resolution, and the control-surface pattern.

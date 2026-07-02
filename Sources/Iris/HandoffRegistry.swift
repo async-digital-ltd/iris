@@ -11,7 +11,7 @@ import Observation
 /// `HandoffRegistry` lets routes remain plain `Hashable` enums with
 /// auto-synthesised conformances.
 ///
-/// `@Observable` — views that read `handoff(for:)` inside their body re-render
+/// `@Observable`: views that read `handoff(for:)` inside their body re-render
 /// when ``register(for:)`` overwrites an entry, so they pick up the new handoff
 /// identity and restart their `.task(id: ObjectIdentifier(handoff))` claim.
 /// Without observation, a re-pushed link to an already-mounted route would

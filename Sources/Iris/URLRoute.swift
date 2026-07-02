@@ -21,7 +21,7 @@ import Foundation
 /// )
 /// ```
 ///
-/// `URLEmission` carries only the path segments AFTER the host —
+/// `URLEmission` carries only the path segments AFTER the host, because
 /// ``URLPathRouter`` already knows the host from the pattern. For
 /// `"conversation/:id"`, `URLEmission(id.rawValue)` produces
 /// `myapp://conversation/<id>`, not `myapp://conversation/conversation/<id>`.
@@ -31,13 +31,13 @@ public struct URLRoute<Intent: Sendable & Equatable>: Sendable {
     public let emit: @Sendable (Intent) -> URLEmission?
 
     /// Pattern grammar:
-    /// - `host/seg1/seg2` — host is the first segment; following segments are
+    /// - `host/seg1/seg2`: host is the first segment; following segments are
     ///   literals.
-    /// - `host/:name` — `:name` is a named capture available via ``URLCaptures``.
-    /// - `host?q&r` — query parameter names; values surface in `URLCaptures`
+    /// - `host/:name`: `:name` is a named capture available via ``URLCaptures``.
+    /// - `host?q&r`: query parameter names; values surface in `URLCaptures`
     ///   under those names. All query captures are optional from the matcher's
-    ///   perspective — absence means the entry is missing from `URLCaptures`.
-    /// - `host` — bare host with no path or query.
+    ///   perspective: absence means the entry is missing from `URLCaptures`.
+    /// - `host`: bare host with no path or query.
     ///
     /// Examples:
     /// - `"conversation/:id"`
@@ -98,7 +98,7 @@ public struct URLPattern: Sendable {
 ///
 /// String-keyed by capture name. Consumers convert the values to their own
 /// strongly-typed identifiers (`Tagged`, `RawRepresentable`, etc.) at the
-/// parse site — the library doesn't impose an ID type on the consumer.
+/// parse site; the library doesn't impose an ID type on the consumer.
 public struct URLCaptures: Sendable {
     private let values: [String: String]
 
@@ -156,7 +156,7 @@ public struct URLPathRouter<Intent: Sendable & Equatable>: Sendable {
         // Use `percentEncodedPath` then split on the literal `/` separator so
         // `%2F` (encoded `/`) inside a single segment is preserved. Decode
         // each segment after the split. `URL.pathComponents` would split
-        // pre-decoded — silently merging the encoded slashes.
+        // pre-decoded, silently merging the encoded slashes.
         let pathSegments = components.percentEncodedPath
             .split(separator: "/", omittingEmptySubsequences: true)
             .compactMap { String($0).removingPercentEncoding }

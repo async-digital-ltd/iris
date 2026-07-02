@@ -6,7 +6,7 @@ import Foundation
 ///
 /// `NavigationFlow` is the protocol a consumer's *flow producer* conforms to.
 /// `operations(intent:)` converts a `Baton`'s intent into a list of
-/// ``Step`` values — each one either a structural ``NavTarget`` the library
+/// ``Step`` values, each one either a structural ``NavTarget`` the library
 /// dispatches automatically, or a ``SideEffect`` value the coordinator's
 /// `apply(_:_:)` switch handles directly.
 ///
@@ -29,7 +29,7 @@ public protocol NavigationFlow: Sendable {
 /// Either a structural ``NavTarget`` the library dispatches itself, or a
 /// consumer-defined `SideEffect` value passed to the coordinator's
 /// `apply(_:_:)`. Splitting the two arms means the coordinator's switch only
-/// covers genuine side-effects — structural cases never appear there.
+/// covers genuine side-effects; structural cases never appear there.
 public enum Step<Route, SheetRoute, SideEffect>: Sendable
 where Route: Hashable & Sendable, SheetRoute: Hashable & Sendable, SideEffect: Sendable {
     case nav(NavTarget<Route, SheetRoute>)
@@ -39,7 +39,7 @@ where Route: Hashable & Sendable, SheetRoute: Hashable & Sendable, SideEffect: S
 extension Step: Equatable where SideEffect: Equatable {}
 
 /// A structural navigation operation the library dispatches on the consumer's
-/// behalf — push/present/pop/dismiss without per-case boilerplate in the
+/// behalf: push/present/pop/dismiss without per-case boilerplate in the
 /// coordinator's `apply` switch.
 public enum NavTarget<Route, SheetRoute>: Sendable, Equatable
 where Route: Hashable & Sendable, SheetRoute: Hashable & Sendable {

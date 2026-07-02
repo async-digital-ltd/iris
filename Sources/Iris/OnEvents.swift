@@ -21,7 +21,7 @@ public extension View {
     /// Listens to a lazily-created `AsyncStream` and runs `consume` for every event.
     ///
     /// The handler runs serially in arrival order. The stream is cancelled when
-    /// the view disappears — SwiftUI tears down `.task`, which exits the
+    /// the view disappears: SwiftUI tears down `.task`, which exits the
     /// `for await` loop and fires the stream's termination handler. Subscriptions
     /// against an upstream actor (e.g. ``Broadcaster``) are released at
     /// that point; mounting `N` views creates `N` subscriptions until they

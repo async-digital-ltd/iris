@@ -6,7 +6,7 @@ import SwiftUI
 ///
 /// Consolidates push/pop and present/dismiss behind a single API so coordinators
 /// don't need to interact with separate navigator instances. Generic over the
-/// route and sheet *types*, not over navigator implementations — the underlying
+/// route and sheet *types*, not over navigator implementations. The underlying
 /// concrete navigators are ``GenericRouteNavigator`` and
 /// ``GenericSheetNavigator``.
 @MainActor
