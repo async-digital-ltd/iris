@@ -1,4 +1,5 @@
-// Copyright 2026 Async Digital Ltd. All rights reserved.
+// Copyright (c) 2026 Async Digital Ltd
+// SPDX-License-Identifier: MIT
 
 import SwiftUI
 
