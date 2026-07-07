@@ -109,6 +109,48 @@ characters survives the round trip. `parse(_:)` decodes from
 (`%2F`) inside a single segment isn't accidentally treated as a path
 separator. Query items are encoded by `URLComponents`.
 
+## Rejecting unresolved targets
+
+Some intents carry an identifier that has to resolve against real state: a
+conversation, a profile, a record fetched from wherever the app keeps its
+data. Nothing in ``URLParsing`` or ``URLPathRouter`` checks that
+automatically; matching a URL pattern only proves the *shape* of the URL is
+right, not that its target still exists.
+
+Checking existence inside the parser, rather than downstream, means every
+consumer of the intent can assume it's the real thing:
+
+```swift
+struct MyURLCodec: URLParsing {
+    func parse(_ url: URL) -> MyIntent {
+        guard let intent = Self.router.parse(url) else { return .unknown }
+        guard Self.resolves(intent) else { return .unknown }
+        return intent
+    }
+
+    private static func resolves(_ intent: MyIntent) -> Bool {
+        switch intent {
+        case .openConversation(let id): ConversationStore.exists(id)
+        default: true
+        }
+    }
+
+    private static let router = URLPathRouter<MyIntent>(/* ... */)
+}
+```
+
+A URL for a conversation deleted since the link was generated (or shared from
+another device, or just malformed) is dropped at this gate rather than
+reaching the coordinator as a valid-looking intent for a row that isn't
+there. The coordinator, the flow, and every view downstream can assume an
+`.openConversation` intent always has a real conversation behind it. The
+alternative is handled once, at the parsing boundary, instead of re-checked
+by every consumer.
+
+This is the same always-return-something discipline as malformed URLs
+above: an unresolved target is just another shape of "this URL doesn't mean
+anything to us right now."
+
 ## Multicasting parsed batons
 
 When more than one part of the app cares about the same link
