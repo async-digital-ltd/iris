@@ -1,5 +1,7 @@
 # Iris
 
+[![Swift Versions](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fasync-digital-ltd%2Firis%2Fbadge%3Ftype%3Dswift-versions)](https://swiftpackageindex.com/async-digital-ltd/iris) [![Platforms](https://img.shields.io/endpoint?url=https%3A%2F%2Fswiftpackageindex.com%2Fapi%2Fpackages%2Fasync-digital-ltd%2Firis%2Fbadge%3Ftype%3Dplatforms)](https://swiftpackageindex.com/async-digital-ltd/iris)
+
 A small Swift package for routing incoming URLs (custom-scheme deep links
 and Universal Links alike) into typed SwiftUI navigation, without
 hand-rolling navigation plumbing for each new screen.
