@@ -6,6 +6,18 @@ A small Swift package for routing incoming URLs (custom-scheme deep links
 and Universal Links alike) into typed SwiftUI navigation, without
 hand-rolling navigation plumbing for each new screen.
 
+Iris is Async Digital's first open-source release.
+
+## Case studies
+
+Async Digital publishes a case-study series built on this package, covering
+how a URL becomes typed navigation, what happens when links arrive faster
+than the UI, and how the pieces fit together internally:
+
+**[async-digital.com/case-studies/deep-linking](https://async-digital.com/case-studies/deep-linking/)**
+
+The series is the long-form explanation. This README is the short one.
+
 ## What it does
 
 - Turns an incoming URL into an app-defined `Intent` via your `URLParsing` codec.
@@ -89,6 +101,28 @@ consumer end to end:
   Step → Route → View pipeline.
 - `iris-url-catalog`: produces a Markdown table of every supported URL.
 
+## Stability
+
+Iris follows [Semantic Versioning](https://semver.org). The public API is
+stable and will not break within a major version: no source-breaking change
+ships in a minor or patch release. Anything that would break a consumer
+waits for the next major version and is documented in that release's notes.
+
+The promise covers the public surface of the `Iris` product. Internal
+symbols and the templates under `Sources/Iris/Excluded/` are outside it and
+may change at any time.
+
+## Contributing
+
+Issues are welcome: bug reports, questions about wiring a host app, and
+proposals for changes all belong in the
+[issue tracker](https://github.com/async-digital-ltd/iris/issues).
+
+Please open an issue before opening a pull request. Agreeing the shape of a
+change first avoids work that cannot be merged, and keeps the public API
+promise above intact.
+
 ## License
 
-See [LICENSE](LICENSE).
+Iris is available under the MIT License. See [LICENSE](LICENSE) for the
+full text.
