@@ -19,6 +19,17 @@ hand-rolling navigation plumbing for each new screen.
 - Hand-off batons let destination views consume the link payload once
   the screen mounts; the registry auto-cleans on `.delivered`.
 
+## Case studies
+
+Iris is the package behind [Deep linking as an input
+language](https://async-digital.com/case-studies/deep-linking/), a series of
+measurement-led writeups on the problems it exists to solve: where URL
+handling should live, resolving the same URL to the right meaning from
+anywhere in the app, keeping taps and URLs on one resolver, and what happens
+when links arrive faster than the UI can mount them. [Iris internals: how it
+works](https://async-digital.com/case-studies/deep-linking/internals/) walks
+the pipeline this package implements.
+
 ## Requirements
 
 - iOS 17+ or macOS 14+
