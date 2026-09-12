@@ -22,6 +22,17 @@ hand-rolling navigation plumbing for each new screen.
 - Hand-off batons let destination views consume the link payload once
   the screen mounts; the registry auto-cleans on `.delivered`.
 
+## Case studies
+
+Iris is the package behind [Deep linking as an input
+language](https://async-digital.com/case-studies/deep-linking/), a series of
+measurement-led writeups on the problems it exists to solve: where URL
+handling should live, resolving the same URL to the right meaning from
+anywhere in the app, keeping taps and URLs on one resolver, and what happens
+when links arrive faster than the UI can mount them. [Iris internals: how it
+works](https://async-digital.com/case-studies/deep-linking/internals/) walks
+the pipeline this package implements.
+
 ## Requirements
 
 - iOS 17+ or macOS 14+
@@ -92,6 +103,28 @@ consumer end to end:
   Step → Route → View pipeline.
 - `iris-url-catalog`: produces a Markdown table of every supported URL.
 
-## License
+## Stability
 
-See [LICENSE](LICENSE).
+Iris follows [Semantic Versioning](https://semver.org). The public API is
+stable and will not break within a major version: no source-breaking change
+ships in a minor or patch release. Anything that would break a consumer
+waits for the next major version and is documented in that release's notes.
+
+The promise covers the public surface of the `Iris` product. Internal
+symbols and the templates under `Sources/Iris/Excluded/` are outside it and
+may change at any time.
+
+## Contributing
+
+Issues are welcome: bug reports, questions about wiring a host app, and
+proposals for changes all belong in the
+[issue tracker](https://github.com/async-digital-ltd/iris/issues).
+
+Please open an issue before opening a pull request. Agreeing the shape of a
+change first avoids work that cannot be merged, and keeps the public API
+promise above intact.
+
+## Licence
+
+Iris is available under the MIT License. See [LICENSE](LICENSE) for the
+full text.
